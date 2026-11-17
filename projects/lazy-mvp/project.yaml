@@ -1,0 +1,13 @@
+slug: lazy-mvp
+name: lazy-mvp-project-generator
+track: light
+created: 2026-11-17
+
+# Aprovacao e humana e explicita: troque para `approved` so depois de ler o artefato.
+stages:
+  brief: review
+  requirements: review
+  rules: review
+  domain: review
+  architecture: review
+  plan: review

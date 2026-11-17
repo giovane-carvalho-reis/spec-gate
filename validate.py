@@ -40,7 +40,21 @@ REQUIRED_DIAGRAMS = {
     "data": ("data-model.md", "erDiagram", "ER do banco"),
     "domain": ("domain-model.md", "classDiagram", "modelo de dominio"),
 }
-PLACEHOLDER = re.compile(r"<[a-z][^>\n]{2,}>|CHANGE[- ]ME|\bTBD\b|\bTODO\b")
+# Placeholder do template: <contexto>, <nome do fluxo>. Tag HTML dentro de rotulo
+# Mermaid (<br/>, <i>) nao conta — foi falso positivo descoberto no primeiro uso real.
+HTML_TAGS = "br|i|b|u|em|strong|hr|p|small|code|sub|sup|span|div"
+PLACEHOLDER = re.compile(
+    rf"<(?!/)(?!(?:{HTML_TAGS})\s*/?>)[a-z][^>\n]{{2,}}>|CHANGE[- ]ME|\bTBD\b|\bTODO\b")
+CODE = re.compile(r"```.*?```|`[^`\n]*`", re.S)
+
+
+def unfilled(text):
+    """Placeholder de template ainda no texto, ignorando codigo.
+
+    Dentro de bloco ou span de codigo, `<slug>` e caminho generico, nao campo
+    vazio — falso positivo descoberto no primeiro uso real.
+    """
+    return PLACEHOLDER.search(CODE.sub("", text))
 REF_FIELDS = ("satisfies", "verified_by", "depends_on")
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.S)
 
@@ -145,7 +159,7 @@ def validate(project_dir):
                 add("G9", f"etapa '{stage}' aprovada mas {doc} nao existe")
             else:
                 text = f.read_text()
-                if PLACEHOLDER.search(text):
+                if unfilled(text):
                     add("G9", f"{doc}: etapa '{stage}' aprovada com placeholder do template"
                               f" ainda no texto")
         folder = STAGE_ARTIFACTS.get(stage)

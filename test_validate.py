@@ -135,6 +135,17 @@ def main():
         check("G9 placeholder do template", validate(d), {"G9"})
 
     with tempfile.TemporaryDirectory() as tmp:
+        d = build(tmp, docs={"plan.md": "# Plano\n\nrode `validate.py projects/<slug>`\n"})
+        check("G9 placeholder em code span nao conta", validate(d), set())
+
+    with tempfile.TemporaryDirectory() as tmp:
+        # tag HTML em rotulo mermaid nao e placeholder (falso positivo real)
+        d = build(tmp, docs={"architecture.md":
+                             "# Arq\n\n```mermaid\nflowchart TD\n"
+                             "    U[Autor<br/><i>aprova</i>] --> S[Sistema]\n```\n"})
+        check("G9 tag HTML em mermaid nao e placeholder", validate(d), set())
+
+    with tempfile.TemporaryDirectory() as tmp:
         d = build(tmp, fr=None)
         check("G9 pasta de requisitos vazia (+G2)", validate(d), {"G9", "G2"})
 

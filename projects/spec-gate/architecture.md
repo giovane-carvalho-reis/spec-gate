@@ -8,7 +8,7 @@
 flowchart TD
     A[Autor<br/><i>especifica e aprova</i>]
     AG[Agente de IA<br/><i>Claude Code / OpenCode</i>]
-    S[lazy-mvp-project-generator<br/><b>metodologia + gates</b>]
+    S[spec-gate<br/><b>metodologia + gates</b>]
     IMP[Projeto de implementacao<br/><i>outro repositorio</i>]
     GH[(GitHub<br/><i>historico e render</i>)]
 

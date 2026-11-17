@@ -1,8 +1,11 @@
-# lazy-mvp-project-generator
+# spec-gate
 
 Especificação de software antes da implementação. Transforma um briefing cru num conjunto
 de artefatos coerentes e rastreáveis — o **Project Specification Package (PSP)** — pronto
 para ser entregue a um agente de implementação.
+
+O nome é o diferencial: `validate.py` é um **gate**. Ele não gera nada — ele barra a
+entrega enquanto a especificação for incoerente, com exit code e sem custar crédito de IA.
 
 Não há aplicação, servidor nem banco de dados. Os artefatos são arquivos Markdown com
 frontmatter, versionados por git. A interface é um agente de IA conduzido por
@@ -49,3 +52,6 @@ a visão é o documento original e mais amplo; o alignment é o escopo que vale.
 ## Requisitos
 
 Python 3.11+, `pyyaml`, `jsonschema`.
+
+> Chamou-se `lazy-mvp-project-generator` até 2026-11-17. O nome antigo prometia gerar
+> projeto; a ferramenta especifica e bloqueia. Ver §12 de `docs/alignment.md`.

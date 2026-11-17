@@ -9,3 +9,4 @@ Em conflito entre os dois, `alignment.md` vence.
 
 > `vision.md` ainda não foi importado. Origem:
 > `~/Documentos/projects-documentation/lazy-mvp-project-generator.md`
+> (nome antigo do projeto)

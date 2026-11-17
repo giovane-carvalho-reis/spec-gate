@@ -1,4 +1,4 @@
-# lazy-mvp-project-generator — Entendimento fechado
+# spec-gate — Entendimento fechado
 
 > Escopo que vale. Refina a visão original (`vision.md`), que descreve uma plataforma web
 > deliberadamente descartada — ver §9. Em conflito, este arquivo vence.
@@ -33,6 +33,7 @@ verificada por gate automático antes de a implementação começar.
 | 11 | Repositório | Um só: metodologia, templates, prompts, skills, agentes, projetos | nada a separar |
 | 12 | Cobertura de diagrama | C4 níveis 1-2, ER, sequência só de fluxo crítico | usuário — §6 |
 | 13 | Divisão de trabalho da IA | Skill gera, subagente revisa | usuário — §7 |
+| 14 | Nome | `spec-gate`. Antes: `lazy-mvp-project-generator` | §12 |
 
 ## 3. Fonte de verdade dos artefatos
 
@@ -188,3 +189,20 @@ insuportável. Nenhuma das duas é hoje.
 2. `spec-traceability` sobrepõe parte do `validate.py`. Escopado para cobertura semântica;
    se na prática só repetir o script, é o primeiro dos quatro subagentes a cortar.
 3. Propagação de `stale` é manual hoje. Automatizar só depois de doer.
+
+## 12. Nome
+
+`spec-gate`, desde 2026-11-17. Antes: `lazy-mvp-project-generator`.
+
+O nome antigo vinha da visão original, de uma plataforma que geraria projetos. Errava
+duas vezes: "generator" promete gerar, e a ferramenta não gera nada — ela especifica e
+barra; "mvp" descreve o escopo do produto especificado, não o que a ferramenta faz.
+
+`spec-gate` nomeia o diferencial real: coerência verificada por gate antes de implementar.
+
+Descartados:
+- `spec-kit` — colide com um projeto conhecido do GitHub.
+- `lazy-spec` — mantinha o prefixo da família, mas fica perto de `project-specs`, que
+  guarda a verdade sobre projetos que **já existem**. Confusão garantida em seis meses.
+- `preflight` — boa metáfora, mas não se explica sozinho numa lista de pastas.
+- `spec-first` — nomeia a postura, não a ferramenta, e não sugere o gate.

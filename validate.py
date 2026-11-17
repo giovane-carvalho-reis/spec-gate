@@ -24,7 +24,6 @@ TRACK_STAGES = {
 STAGE_DOCS = {
     "brief": "brief.md",
     "product": "product.md",
-    "processes": "processes.md",
     "domain": "domain-model.md",
     "architecture": "architecture.md",
     "data": "data-model.md",
@@ -32,8 +31,15 @@ STAGE_DOCS = {
     "tests": "test-strategy.md",
     "plan": "plan.md",
 }
-# Etapa -> pasta que precisa de ao menos um artefato.
-STAGE_ARTIFACTS = {"requirements": "requirements", "use-cases": "use-cases"}
+# Etapa -> pasta que precisa de ao menos um Artefato.
+STAGE_ARTIFACTS = {
+    "requirements": "requirements",
+    "rules": "rules",
+    "use-cases": "use-cases",
+    "processes": "processes",
+}
+# Prefixo de Artefato -> diagrama mermaid que ele precisa conter.
+ARTIFACT_DIAGRAMS = {"PR": ("flowchart", "fluxo do processo")}
 # Diagrama obrigatorio: etapa -> (documento, tipo mermaid, rotulo).
 REQUIRED_DIAGRAMS = {
     "architecture": ("architecture.md", "flowchart", "C4 nivel 1 (contexto)"),
@@ -133,8 +139,14 @@ def validate(project_dir):
             add("G7", f"{rel}: status proposed — falta revisao humana")
         elif status == "stale":
             add("G6", f"{rel}: status stale — dependencia mudou e nao foi propagada")
-        if aid.startswith("FR-") and not acceptance_criteria(body):
-            add("G1", f"{rel}: sem critério de aceitação preenchido")
+        if aid.startswith("FR-"):
+            if not acceptance_criteria(body):
+                add("G1", f"{rel}: sem critério de aceitação preenchido")
+            if not meta.get("verification"):
+                add("G11", f"{rel}: nao declara `verification` (gate|teste|observacao)")
+        kind = ARTIFACT_DIAGRAMS.get(aid.split("-")[0])
+        if kind and not re.search(rf"```mermaid\s*\n\s*{kind[0]}", body):
+            add("G10", f"{rel}: falta diagrama mermaid '{kind[0]}' — {kind[1]}")
         for field in REF_FIELDS:
             for ref in meta.get(field) or []:
                 if ref not in artifacts:

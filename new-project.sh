@@ -10,8 +10,7 @@ dir=projects/$slug
 
 # Documentos por trilha — espelha TRACK_STAGES/TRACK_DOCS em validate.py
 light_docs=(brief.md questions.md domain-model.md architecture.md plan.md)
-full_docs=("${light_docs[@]}" product.md processes.md data-model.md interfaces.md
-           test-strategy.md sequence.md)
+full_docs=("${light_docs[@]}" product.md data-model.md interfaces.md test-strategy.md)
 extra_stages=(product use-cases processes data interfaces tests)
 
 mkdir -p "$dir"/{requirements,rules,use-cases,decisions,tests,processes}

@@ -34,6 +34,12 @@ verificada por gate automático antes de a implementação começar.
 | 12 | Cobertura de diagrama | C4 níveis 1-2, ER, sequência só de fluxo crítico | usuário — §6 |
 | 13 | Divisão de trabalho da IA | Skill gera, subagente revisa | usuário — §7 |
 | 14 | Nome | `spec-gate`. Antes: `lazy-mvp-project-generator` | §12 |
+| 15 | Tipos de arquivo | **Artefato** (ID, frontmatter, rastreável) e **Documento de etapa** (sem ID) | ADR-008 |
+| 16 | Fluxo | Artefato `processes/PR-*.md`. Sequência mora dentro dele | ADR-008 |
+| 17 | `Projeto` vs `Implementação` | `Projeto` é a especificação; `Implementação` é o software construído | glossário |
+| 18 | PSP | Instantâneo imutável (commit ou tag), não estado da pasta | ADR-007 |
+| 19 | Verificação | Campo `verification: gate \| teste \| observacao` em todo `FR-*` | G11 |
+| 20 | Estados da etapa | `pending \| review \| approved`. `in_progress` removido | flexibilidade morta |
 
 ## 3. Fonte de verdade dos artefatos
 
@@ -85,7 +91,7 @@ source: brief.md#secao-4
 Escolhida na criação. Promovível de `light` para `full`; nunca rebaixada — perderia
 artefato aprovado.
 
-## 5. Os 10 gates
+## 5. Os 11 gates
 
 `validate.py` bloqueia o PSP enquanto existir:
 
@@ -101,8 +107,9 @@ artefato aprovado.
 | G8 | Frontmatter inválido, ou `id` ≠ nome do arquivo |
 | G9 | Etapa aprovada sem documento, com pasta vazia, ou com placeholder do template |
 | G10 | Diagrama obrigatório ausente ou do tipo errado |
+| G11 | Requisito funcional sem `verification` declarado |
 
-Detalhe em `methodology/gates.md`. Autoteste em `test_validate.py`, 17 casos.
+Detalhe em `methodology/gates.md`. Autoteste em `test_validate.py`, 25 casos.
 
 ## 6. Diagramas
 
@@ -189,6 +196,9 @@ insuportável. Nenhuma das duas é hoje.
 2. `spec-traceability` sobrepõe parte do `validate.py`. Escopado para cobertura semântica;
    se na prática só repetir o script, é o primeiro dos quatro subagentes a cortar.
 3. Propagação de `stale` é manual hoje. Automatizar só depois de doer.
+4. Nada força marcar a tag do PSP (ADR-007). Tag esquecida = entrega não identificável, e
+   o validador não detecta.
+5. FR-010 (promoção de trilha) continua sem implementação — fatia 8.
 
 ## 12. Nome
 

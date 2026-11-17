@@ -9,7 +9,7 @@ flowchart TD
     A[Autor<br/><i>especifica e aprova</i>]
     AG[Agente de IA<br/><i>Claude Code / OpenCode</i>]
     S[spec-gate<br/><b>metodologia + gates</b>]
-    IMP[Projeto de implementacao<br/><i>outro repositorio</i>]
+    IMP[Implementacao<br/><i>outro repositorio</i>]
     GH[(GitHub<br/><i>historico e render</i>)]
 
     A -->|briefing, respostas, aprovacao| S
@@ -23,7 +23,7 @@ flowchart TD
 |---|---|---|
 | Autor | Única pessoa. Fornece briefing, responde entrevista, aprova etapa | Único que promove a `approved` (BR-001) |
 | Agente de IA | Executa o processo: critica, entrevista, gera artefato `proposed` | É a interface; não há outra |
-| Projeto de implementação | Consome o PSP e constrói o software | Fora deste repositório, por escopo |
+| Implementação | Consome o PSP e constrói o software | Fora deste repositório, por escopo |
 | GitHub | Histórico, hospedagem e renderização de Mermaid | Sem API, sem integração — só git |
 
 ## Nível 2 — Contêineres

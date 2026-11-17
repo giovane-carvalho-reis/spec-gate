@@ -51,7 +51,7 @@ a visão é o documento original e mais amplo; o alignment é o escopo que vale.
 
 ## Requisitos
 
-Python 3.11+, `pyyaml`, `jsonschema`.
+Python 3.11+. `pip install -r requirements.txt` (duas dependências: `pyyaml`, `jsonschema`).
 
 > Chamou-se `lazy-mvp-project-generator` até 2026-11-17. O nome antigo prometia gerar
 > projeto; a ferramenta especifica e bloqueia. Ver §12 de `docs/alignment.md`.

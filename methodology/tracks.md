@@ -10,7 +10,7 @@ Pode ser promovida de `light` para `full`. Nunca rebaixada — perderia artefato
 | Requisitos funcionais e NFR | `requirements` | ● | ● |
 | Regras de negócio | `rules` | ● | ● |
 | Casos de uso | `use-cases` | | ● |
-| Fluxos e processos | `processes` | | ● |
+| Fluxos e processos (`PR-*`) | `processes` | | ● |
 | Modelo de domínio | `domain` | ● | ● |
 | Arquitetura e decisões | `architecture` | ● | ● |
 | Modelo de dados | `data` | | ● |
@@ -25,6 +25,8 @@ igual — artefato que existe tem que ser coerente, independente da trilha.
 
 ## Estados de etapa
 
-`pending` → `in_progress` → `review` → `approved`
+`pending` → `review` → `approved`
+
+`review` significa "terminei, falta você ler".
 
 Só `approved` passa o gate. Aprovação é humana e explícita: editar `project.yaml`.

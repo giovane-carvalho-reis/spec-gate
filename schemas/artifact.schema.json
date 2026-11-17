@@ -33,6 +33,10 @@
       "type": "string",
       "description": "De onde veio: brief.md#secao, ou conversa com o usuario."
     },
-    "priority": { "enum": ["must", "should", "could", "wont"] }
+    "priority": { "enum": ["must", "should", "could", "wont"] },
+    "verification": {
+      "enum": ["gate", "teste", "observacao"],
+      "description": "Como se confirma que o requisito foi atendido. Obrigatorio em FR-* (G11). observacao = so humano confirma, nenhum gate ou teste alcanca."
+    }
   }
 }

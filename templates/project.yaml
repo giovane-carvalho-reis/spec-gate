@@ -3,6 +3,7 @@ name: CHANGE ME
 track: light          # light | full  (methodology/tracks.md)
 created: YYYY-MM-DD
 
+# Estados: pending | review | approved
 # Aprovacao e humana e explicita: troque para `approved` so depois de ler o artefato.
 stages:
   brief: pending

@@ -13,13 +13,16 @@ Cada uma corresponde a uma falha concreta que já custou retrabalho em projeto r
 | `G6` | Artefato com `status: stale` | Mudança a montante não propagada |
 | `G7` | Artefato com `status: proposed` | Sugestão de IA não revisada por humano |
 | `G8` | Frontmatter inválido, ou `id` diferente do nome do arquivo | Contrato quebrado |
+| `G9` | Etapa aprovada sem seu Documento de etapa, com pasta de Artefatos vazia, ou com placeholder do template | Etapa aprovada sem conteúdo |
+| `G10` | Diagrama obrigatório ausente ou do tipo errado | Diagrama é o documento; sem ele não há o que ler |
+| `G11` | Requisito funcional sem `verification` declarado | `verified_by` vazio seria ambíguo: não testado ainda, ou não testável? |
 
-`G1` só se aplica a requisito funcional (`FR-*`). NFR usa métrica no corpo, não critério
+`G1` e `G11` só se aplicam a requisito funcional (`FR-*`). NFR usa métrica no corpo, não critério
 em lista.
 
 ## Definition of Ready (por artefato)
 
-- Tem `id`, `title`, `status: approved`.
+- Tem `id`, `title`, `status: approved`. Requisito funcional tem `verification`.
 - Está rastreado: requisito aponta a regra que satisfaz; teste aponta o que verifica.
 - Não contém `TODO`, `TBD` nem `?` como valor de campo.
 

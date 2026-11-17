@@ -11,7 +11,7 @@
     "created": { "description": "ISO 8601. O YAML ja converte para date." },
     "stages": {
       "type": "object",
-      "additionalProperties": { "enum": ["pending", "in_progress", "review", "approved"] }
+      "additionalProperties": { "enum": ["pending", "review", "approved"] }
     }
   }
 }

@@ -52,7 +52,7 @@ a um subagente é desperdício — paga contexto frio para produzir o que a skil
 `spec-coherence` e `spec-traceability` são independentes: dispare na mesma mensagem para
 rodarem em paralelo.
 
-**Ordem que não se inverte:** `validate.py` antes de qualquer subagente. Os 10 gates são
+**Ordem que não se inverte:** `validate.py` antes de qualquer subagente. Os 11 gates são
 grátis e locais — não gaste contexto frio com o que um script pega.
 
 ## Regras invioláveis
@@ -69,9 +69,21 @@ grátis e locais — não gaste contexto frio com o que um script pega.
 6. **Nunca gere código de aplicação aqui.** Este repo produz especificação. A
    implementação é outro projeto, e recebe o PSP.
 
+## Dois tipos de arquivo
+
+- **Artefato** — ID estável, frontmatter, rastreável: `FR`, `NFR`, `BR`, `UC`, `ADR`, `TC`,
+  `PR`. Mora em pasta por tipo.
+- **Documento de etapa** — narrativo, um por etapa, sem ID: briefing, produto, domínio,
+  arquitetura, dados, interfaces, estratégia de teste, plano.
+
+A escolha é uma pergunta só: **outro arquivo precisa citar isto por ID?** Ver ADR-008 na
+spec do próprio repo.
+
 ## Ao criar artefato
 
 - Template em `templates/`, um por tipo. Copie e preencha; não invente estrutura.
+- Requisito funcional declara `verification: gate | teste | observacao` (G11). `observacao`
+  significa que nenhum gate ou teste alcança — só humano confirma.
 - Nome do arquivo = o `id`. `FR-003` vive em `requirements/FR-003.md`. O validador checa.
 - Numere sequencialmente dentro do tipo, sem reaproveitar número de artefato removido.
 - Prefixos: `FR` requisito, `NFR` atributo de qualidade, `BR` regra, `UC` caso de uso,
@@ -95,10 +107,10 @@ Mermaid é o formato único — renderiza no GitHub, sem ferramenta externa.
 | C4 nível 1, contexto | `architecture.md` | sim (G10) |
 | C4 nível 2, contêiner | `architecture.md` | recomendado |
 | C4 nível 3, componente | — | **fora de propósito**: envelhece em semanas, o código conta melhor |
+| `flowchart` de fluxo | `processes/PR-*.md` | sim, em cada `PR-*` (G10) |
+| `sequenceDiagram` | dentro do `PR-*` que ele detalha | só fluxo crítico |
 | `classDiagram` do domínio | `domain-model.md` | sim (G10) |
 | `erDiagram` do banco | `data-model.md` | sim na trilha `full` (G10) |
-| `flowchart` de processo | `processes.md` | um por fluxo relevante |
-| `sequenceDiagram` | `sequence.md` | só fluxo crítico |
 
 Sequência só onde há integração externa, ordem que importa, estado intermediário ou falha
 parcial. Sequência de CRUD é desperdício. E todo caminho de falha do diagrama precisa de

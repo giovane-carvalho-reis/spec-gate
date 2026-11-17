@@ -13,7 +13,7 @@ Rode **antes** de pedir aprovação de etapa ou de fechar o PSP. Dois passos, ne
 python3 validate.py projects/<slug>
 ```
 
-Os 10 gates: referência quebrada, regra órfã, critério ausente, `proposed`, `stale`,
+Os 11 gates: referência quebrada, regra órfã, critério ausente, `proposed`, `stale`,
 documento ou diagrama faltando. Conserte tudo antes do passo 2 — não gaste subagente com
 o que um script pega.
 

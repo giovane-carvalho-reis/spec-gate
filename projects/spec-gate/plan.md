@@ -2,19 +2,23 @@
 
 > Destino: um agente de implementação. Cada fatia é executável sem ler o PSP inteiro.
 >
-> Este projeto é parcialmente construído. A coluna **estado** diz o que já existe — o
-> plano é honesto sobre isso em vez de replanejar o que está feito.
+> Este projeto é parcialmente construído. A coluna **estado** distingue duas coisas que
+> antes se chamavam ambas de "feito":
+>
+> - **provado** — existe e um gate ou teste confirma (`verification: gate | teste`)
+> - **escrito** — a instrução existe, mas só observação humana confirma que funciona
+>   (`verification: observacao`). A fatia 7 é a única que converte `escrito` em `provado`.
 
 ## Ordem de construção
 
 | # | Fatia | Entrega observável | Requisitos | Depende de | Estado |
 |---:|---|---|---|---|---|
-| 1 | Contrato do artefato | Schema do frontmatter e do `project.yaml`; template de cada tipo | FR-005 | — | feito |
-| 2 | Gates e validador | `validate.py` com os 10 gates e exit code; autoteste em 17 casos | FR-002, FR-006, FR-007, NFR-001, NFR-002 | 1 | feito |
-| 3 | Criação de projeto | `new-project.sh` criando a estrutura conforme a trilha | FR-001 | 1 | feito |
-| 4 | Instrução do processo | `AGENTS.md` com as regras invioláveis e o ciclo | FR-005, NFR-004 | 2, 3 | feito |
-| 5 | Skills por etapa | 12 skills; cada etapa gera seu artefato a partir do template | FR-003, FR-004, FR-005 | 4 | feito |
-| 6 | Subagentes de revisão | 4 papéis em contexto isolado, devolvendo achados | FR-003, FR-008, NFR-001 | 5 | feito |
+| 1 | Contrato do artefato | Schema do frontmatter e do `project.yaml`; template de cada tipo | FR-005 | — | escrito |
+| 2 | Gates e validador | `validate.py` com os 10 gates e exit code; autoteste em 17 casos | FR-002, FR-006, FR-007, NFR-001, NFR-002 | 1 | provado |
+| 3 | Criação de projeto | `new-project.sh` criando a estrutura conforme a trilha | FR-001 | 1 | provado |
+| 4 | Instrução do processo | `AGENTS.md` com as regras invioláveis e o ciclo | FR-005, NFR-004 | 2, 3 | escrito |
+| 5 | Skills por etapa | 12 skills; cada etapa gera seu artefato a partir do template | FR-003, FR-004, FR-005 | 4 | escrito |
+| 6 | Subagentes de revisão | 4 papéis em contexto isolado, devolvendo achados | FR-003, FR-008, NFR-001 | 5 | escrito |
 | 7 | **Primeiro projeto real** | Um projeto do autor atravessa as 12 skills e sai com os 10 gates verdes | FR-009, NFR-004 | 5, 6 | **pendente** |
 | 8 | Promoção de trilha | `light` → `full` preservando aprovação | FR-010 | 3 | pendente |
 
@@ -23,7 +27,9 @@
 O que construir: nada. O que **fazer**: atravessar o processo com um briefing real, de
 ponta a ponta, até o exit code 0.
 
-Por que esta antes da 8: as fatias 1 a 6 não estão provadas, só testadas. O autoteste
+Por que esta antes da 8: das seis fatias entregues, só duas estão **provadas**. As outras
+quatro estão **escritas** — e os requisitos que elas atendem declaram
+`verification: observacao` justamente porque nenhum gate os alcança. O autoteste
 verifica que o validador detecta o que ele sabe detectar; não verifica que os templates
 perguntam o que importa, que as skills geram artefato útil, nem que o PSP resultante basta
 para implementar. Template genérico parece bom até o primeiro uso real — é o caso concreto

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "project.yaml",
+  "type": "object",
+  "required": ["slug", "name", "track", "stages"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "name": { "type": "string", "minLength": 2 },
+    "track": { "enum": ["light", "full"] },
+    "created": { "description": "ISO 8601. O YAML ja converte para date." },
+    "stages": {
+      "type": "object",
+      "additionalProperties": { "enum": ["pending", "in_progress", "review", "approved"] }
+    }
+  }
+}

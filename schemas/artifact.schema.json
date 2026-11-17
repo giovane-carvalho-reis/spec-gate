@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Artifact frontmatter",
+  "type": "object",
+  "required": ["id", "type", "title", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^(FR|NFR|BR|UC|ADR|TC|PR)-[0-9]{3}$",
+      "description": "Prefixo define o tipo. Igual ao nome do arquivo."
+    },
+    "type": {
+      "enum": ["requirement", "nfr", "rule", "use-case", "decision", "test-case", "process"]
+    },
+    "title": { "type": "string", "minLength": 3 },
+    "status": {
+      "enum": ["proposed", "approved", "stale"],
+      "description": "proposed = sugerido por IA, nao revisado. stale = dependencia mudou."
+    },
+    "satisfies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs de regra ou requisito que este artefato atende."
+    },
+    "verified_by": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs de caso de teste que verificam este artefato."
+    },
+    "depends_on": { "type": "array", "items": { "type": "string" } },
+    "source": {
+      "type": "string",
+      "description": "De onde veio: brief.md#secao, ou conversa com o usuario."
+    },
+    "priority": { "enum": ["must", "should", "could", "wont"] }
+  }
+}

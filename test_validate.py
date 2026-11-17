@@ -42,10 +42,21 @@ Enunciado.
 """
 
 
-def build(tmp, fr=FR, br=BR, project=BASE_PROJECT, questions=None):
+DOCS = {
+    "brief.md": "# Briefing\n\nO problema e concreto.\n",
+    "domain-model.md": "# Dominio\n\n```mermaid\nclassDiagram\n    class Pedido\n```\n",
+    "architecture.md": "# Arq\n\n```mermaid\nflowchart TD\n    U --> S\n```\n",
+    "plan.md": "# Plano\n\n| 1 | fatia | entrega | FR-001 | - |\n",
+}
+
+
+def build(tmp, fr=FR, br=BR, project=BASE_PROJECT, questions=None, docs=None):
     d = Path(tmp)
     for sub in ("requirements", "rules", "use-cases", "decisions", "tests", "processes"):
         (d / sub).mkdir(parents=True, exist_ok=True)
+    for name, text in {**DOCS, **(docs or {})}.items():
+        if text is not None:
+            (d / name).write_text(text)
     (d / "project.yaml").write_text(project)
     if fr:
         (d / "requirements/FR-001.md").write_text(fr)
@@ -114,6 +125,26 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         d = build(tmp, br=BR.replace("type: rule", "type: banana"))
         check("G8 type invalido", validate(d), {"G8"})
+
+    with tempfile.TemporaryDirectory() as tmp:
+        d = build(tmp, docs={"plan.md": None})
+        check("G9 documento de etapa aprovada ausente", validate(d), {"G9"})
+
+    with tempfile.TemporaryDirectory() as tmp:
+        d = build(tmp, docs={"plan.md": "# Plano\n\n<fatia a definir>\n"})
+        check("G9 placeholder do template", validate(d), {"G9"})
+
+    with tempfile.TemporaryDirectory() as tmp:
+        d = build(tmp, fr=None)
+        check("G9 pasta de requisitos vazia (+G2)", validate(d), {"G9", "G2"})
+
+    with tempfile.TemporaryDirectory() as tmp:
+        d = build(tmp, docs={"architecture.md": "# Arq\n\nso prosa, sem diagrama.\n"})
+        check("G10 diagrama de contexto ausente", validate(d), {"G10"})
+
+    with tempfile.TemporaryDirectory() as tmp:
+        d = build(tmp, docs={"domain-model.md": "# Dom\n\n```mermaid\nflowchart TD\n  A\n```\n"})
+        check("G10 diagrama do tipo errado", validate(d), {"G10"})
 
     print("\ntodos os gates verificados")
 

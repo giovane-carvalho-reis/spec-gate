@@ -8,16 +8,24 @@ slug=${1:?slug obrigatorio}; name=${2:?nome obrigatorio}; track=${3:-light}
 dir=projects/$slug
 [[ -e $dir ]] && { echo "$dir ja existe"; exit 1; }
 
+# Documentos por trilha — espelha TRACK_STAGES/TRACK_DOCS em validate.py
+light_docs=(brief.md questions.md domain-model.md architecture.md plan.md)
+full_docs=("${light_docs[@]}" product.md processes.md data-model.md interfaces.md
+           test-strategy.md sequence.md)
+extra_stages=(product use-cases processes data interfaces tests)
+
 mkdir -p "$dir"/{requirements,rules,use-cases,decisions,tests,processes}
-cp templates/brief.md templates/questions.md "$dir/"
-cp templates/domain-model.md "$dir/domain-model.md"
-cp templates/architecture.md templates/plan.md "$dir/"
+docs=("${light_docs[@]}"); [[ $track == full ]] && docs=("${full_docs[@]}")
+for f in "${docs[@]}"; do cp "templates/$f" "$dir/$f"; done
+
 sed -e "s/^slug: .*/slug: $slug/" -e "s/^name: .*/name: $name/" \
     -e "s/^track: .*/track: $track/" -e "s/YYYY-MM-DD/$(date +%F)/" \
     templates/project.yaml > "$dir/project.yaml"
-[[ $track == full ]] && sed -i '/^stages:/a\  product: pending\n  use-cases: pending\n  processes: pending\n  data: pending\n  interfaces: pending\n  tests: pending' "$dir/project.yaml"
+if [[ $track == full ]]; then
+  for s in "${extra_stages[@]}"; do sed -i "/^stages:/a\\  $s: pending" "$dir/project.yaml"; done
+fi
 
-echo "criado $dir (trilha $track)"
+echo "criado $dir (trilha $track, ${#docs[@]} documentos)"
 echo "1. preencha $dir/brief.md"
-echo "2. rode o prompt prompts/critique.md sobre ele"
+echo "2. /spec-critique $slug"
 echo "3. python3 validate.py $dir"

@@ -6,13 +6,54 @@ processo. Leia `docs/alignment.md` antes de agir — é o escopo que vale.
 ## O ciclo
 
 ```
-brief.md  →  prompts/critique.md  →  questions.md  →  prompts/interview.md
-   → artefatos (status: proposed)  →  aprovação humana (status: approved)
-   → prompts/coherence-review.md   →  validate.py  →  PSP
+/spec-brief → /spec-critique → /spec-interview → /spec-requirements → /spec-rules
+  → /spec-domain → /spec-architecture → [/spec-data /spec-interfaces /spec-tests]
+  → /spec-plan → /spec-review → validate.py → PSP
 ```
 
 Iterativo. Uma decisão de arquitetura pode reabrir requisito; uma regra descoberta na
 modelagem pode mudar caso de uso. Voltar não é retrabalho, é o processo.
+
+As etapas entre colchetes só existem na trilha `full`.
+
+## Skills e subagentes — e por que a divisão economiza crédito
+
+**Skill** carrega instrução no contexto atual, custo marginal quase zero. É o certo para
+**gerar**: o briefing já está em contexto, a skill só diz como escrever.
+
+**Subagente** paga contexto frio. Só compensa quando **lê muito e devolve pouco** — e
+então compensa duas vezes, porque o varrimento não entope a janela principal.
+
+Portanto: **skill para gerar, subagente para revisar.** Delegar a geração de um requisito
+a um subagente é desperdício — paga contexto frio para produzir o que a skill faz de graça.
+
+| Skill | Etapa |
+|---|---|
+| `spec-brief` | briefing inicial |
+| `spec-critique` | crítica do briefing (delega a `spec-critic`) |
+| `spec-interview` | fecha as lacunas com o usuário |
+| `spec-requirements` | `FR-*` e `NFR-*` |
+| `spec-rules` | `BR-*` |
+| `spec-domain` | glossário, entidades, `classDiagram` |
+| `spec-architecture` | C4 níveis 1-2 e `ADR-*` |
+| `spec-data` | `erDiagram`, tabelas, índices |
+| `spec-interfaces` | contratos, fluxos, sequência |
+| `spec-tests` | estratégia e `TC-*` |
+| `spec-plan` | fatiamento (delega a `spec-estimator`) |
+| `spec-review` | validador + agentes de revisão |
+
+| Subagente | Lê | Devolve |
+|---|---|---|
+| `spec-critic` | o briefing | lacuna, ambiguidade, contradição |
+| `spec-coherence` | a pasta inteira | incoerência de sentido entre artefatos |
+| `spec-traceability` | todas as cadeias | cobertura errada, faltando ou inflada |
+| `spec-estimator` | requisitos e arquitetura | proposta de fatias e ordem |
+
+`spec-coherence` e `spec-traceability` são independentes: dispare na mesma mensagem para
+rodarem em paralelo.
+
+**Ordem que não se inverte:** `validate.py` antes de qualquer subagente. Os 10 gates são
+grátis e locais — não gaste contexto frio com o que um script pega.
 
 ## Regras invioláveis
 
@@ -44,6 +85,27 @@ projeto ou framework. Traduzir negócio em técnica é seu trabalho, não dele.
 
 Uma pergunta por vez. Ofereça um default quando houver um razoável: escolher é mais fácil
 que inventar.
+
+## Diagramas
+
+Mermaid é o formato único — renderiza no GitHub, sem ferramenta externa.
+
+| Diagrama | Onde | Obrigatório |
+|---|---|---|
+| C4 nível 1, contexto | `architecture.md` | sim (G10) |
+| C4 nível 2, contêiner | `architecture.md` | recomendado |
+| C4 nível 3, componente | — | **fora de propósito**: envelhece em semanas, o código conta melhor |
+| `classDiagram` do domínio | `domain-model.md` | sim (G10) |
+| `erDiagram` do banco | `data-model.md` | sim na trilha `full` (G10) |
+| `flowchart` de processo | `processes.md` | um por fluxo relevante |
+| `sequenceDiagram` | `sequence.md` | só fluxo crítico |
+
+Sequência só onde há integração externa, ordem que importa, estado intermediário ou falha
+parcial. Sequência de CRUD é desperdício. E todo caminho de falha do diagrama precisa de
+linha na tabela de falhas — diagrama só com caminho feliz não serve para implementar.
+
+**Diagrama é o documento; texto é a legenda.** Prosa só onde ela carrega o *porquê*, que
+nenhum diagrama expressa.
 
 ## Antes de dizer que terminou
 

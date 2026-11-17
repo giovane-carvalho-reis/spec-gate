@@ -20,6 +20,27 @@ TRACK_STAGES = {
     "full": ["brief", "product", "requirements", "rules", "use-cases", "processes",
              "domain", "architecture", "data", "interfaces", "tests", "plan"],
 }
+# Etapa -> documento que a materializa. Etapa sem entrada aqui vive em pasta de artefato.
+STAGE_DOCS = {
+    "brief": "brief.md",
+    "product": "product.md",
+    "processes": "processes.md",
+    "domain": "domain-model.md",
+    "architecture": "architecture.md",
+    "data": "data-model.md",
+    "interfaces": "interfaces.md",
+    "tests": "test-strategy.md",
+    "plan": "plan.md",
+}
+# Etapa -> pasta que precisa de ao menos um artefato.
+STAGE_ARTIFACTS = {"requirements": "requirements", "use-cases": "use-cases"}
+# Diagrama obrigatorio: etapa -> (documento, tipo mermaid, rotulo).
+REQUIRED_DIAGRAMS = {
+    "architecture": ("architecture.md", "flowchart", "C4 nivel 1 (contexto)"),
+    "data": ("data-model.md", "erDiagram", "ER do banco"),
+    "domain": ("domain-model.md", "classDiagram", "modelo de dominio"),
+}
+PLACEHOLDER = re.compile(r"<[a-z][^>\n]{2,}>|CHANGE[- ]ME|\bTBD\b|\bTODO\b")
 REF_FIELDS = ("satisfies", "verified_by", "depends_on")
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.S)
 
@@ -115,6 +136,27 @@ def validate(project_dir):
         if stages.get(stage) != "approved":
             add("G4", f"etapa obrigatoria '{stage}' esta '{stages.get(stage, 'ausente')}'"
                       f" (trilha {track})")
+            continue
+        # Etapa aprovada precisa ter o documento, com conteudo proprio.
+        doc = STAGE_DOCS.get(stage)
+        if doc:
+            f = project_dir / doc
+            if not f.exists():
+                add("G9", f"etapa '{stage}' aprovada mas {doc} nao existe")
+            else:
+                text = f.read_text()
+                if PLACEHOLDER.search(text):
+                    add("G9", f"{doc}: etapa '{stage}' aprovada com placeholder do template"
+                              f" ainda no texto")
+        folder = STAGE_ARTIFACTS.get(stage)
+        if folder and not any((project_dir / folder).glob("*.md")):
+            add("G9", f"etapa '{stage}' aprovada mas {folder}/ esta vazia")
+        diag = REQUIRED_DIAGRAMS.get(stage)
+        if diag:
+            dfile, kind, label = diag
+            f = project_dir / dfile
+            if f.exists() and not re.search(rf"```mermaid\s*\n\s*{kind}", f.read_text()):
+                add("G10", f"{dfile}: falta diagrama mermaid '{kind}' — {label}")
 
     for q in load_questions(project_dir / "questions.md"):
         if isinstance(q, dict) and q.get("blocking"):

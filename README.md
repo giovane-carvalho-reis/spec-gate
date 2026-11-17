@@ -12,8 +12,19 @@ frontmatter, versionados por git. A interface é um agente de IA conduzido por
 
 ```bash
 ./new-project.sh minha-ideia "Minha Ideia" light   # cria projects/minha-ideia/
-# preencha projects/minha-ideia/brief.md, ou peça ao agente
+```
+
+Depois, no Claude Code, uma skill por etapa:
+
+```
+/spec-brief minha-ideia        → /spec-critique → /spec-interview
+/spec-requirements → /spec-rules → /spec-domain → /spec-architecture → /spec-plan
+/spec-review                   → roda os 10 gates + revisão por subagente
+```
+
+```bash
 python3 validate.py projects/minha-ideia          # exit != 0 enquanto houver bloqueio
+python3 test_validate.py                          # autoteste dos 10 gates
 ```
 
 Quando o validador passa, a pasta do projeto **é** o PSP. Entregue a pasta (ou
@@ -28,6 +39,8 @@ Quando o validador passa, a pasta do projeto **é** o PSP. Entregue a pasta (ou
 | `prompts/` | crítica, entrevista e revisão de coerência |
 | `schemas/` | contrato do frontmatter e do `project.yaml` |
 | `projects/` | os projetos especificados, um por pasta |
+| `.claude/skills/` | 12 skills, uma por etapa — geração |
+| `.claude/agents/` | 4 subagentes — revisão em contexto frio |
 | `docs/` | visão longa e o entendimento fechado que define este escopo |
 
 Leia [`docs/alignment.md`](docs/alignment.md) antes de [`docs/vision.md`](docs/vision.md):

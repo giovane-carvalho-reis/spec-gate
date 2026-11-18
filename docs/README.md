@@ -7,6 +7,6 @@
 
 Em conflito entre os dois, `alignment.md` vence.
 
-> `vision.md` ainda não foi importado. Origem:
-> `~/Documentos/projects-documentation/lazy-mvp-project-generator.md`
-> (nome antigo do projeto)
+> `vision.md` preserva o título antigo, `lazy-mvp-project-generator`, e descreve uma
+> plataforma web com 11 módulos que foi descartada. Está aqui como registro do ponto de
+> partida, não como especificação vigente — ver §9 e §12 de `alignment.md`.

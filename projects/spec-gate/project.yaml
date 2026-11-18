@@ -8,6 +8,6 @@ stages:
   brief: review
   requirements: review
   rules: review
-  domain: review
+  domain: approved
   architecture: review
   plan: review

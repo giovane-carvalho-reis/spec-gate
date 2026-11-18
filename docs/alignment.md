@@ -20,7 +20,7 @@ verificada por gate automático antes de a implementação começar.
 
 | # | Decisão | Valor | Origem |
 |---:|---|---|---|
-| 1 | Forma do produto | Repositório de metodologia + validador. Sem app, sem servidor | revisto — §9 |
+| 1 | Forma do produto | Repositório de metodologia + validador, mais um painel local somente leitura | revisto — §9; emendado pelo ADR-009 |
 | 2 | Consumidor do PSP | Agente de IA (Claude Code / OpenCode) | usuário |
 | 3 | Profundidade | Trilhas por porte: `light` (6 etapas) / `full` (12) | usuário |
 | 4 | Primeiro caso real | Um projeto novo do usuário | usuário |
@@ -40,6 +40,7 @@ verificada por gate automático antes de a implementação começar.
 | 18 | PSP | Instantâneo imutável (commit ou tag), não estado da pasta | ADR-007 |
 | 19 | Verificação | Campo `verification: gate \| teste \| observacao` em todo `FR-*` | G11 |
 | 20 | Estados da etapa | `pending \| review \| approved`. `in_progress` removido | flexibilidade morta |
+| 21 | Painel local | `dashboard.py`, somente leitura, `127.0.0.1`. Emenda a decisão 1 | ADR-009 |
 
 ## 3. Fonte de verdade dos artefatos
 

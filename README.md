@@ -31,11 +31,18 @@ python3 validate.py projects/minha-ideia   # exit != 0 enquanto houver bloqueio
 ./deliver.sh minha-ideia                   # valida e marca a tag do PSP
 ```
 
+Painel de progresso, somente leitura:
+
+```bash
+python3 dashboard.py              # http://localhost:8099
+```
+
 Autoteste do repositório:
 
 ```bash
 python3 test_validate.py    # os 11 gates, 26 casos
 python3 test_scripts.py     # criacao e promocao de projeto, 7 casos
+python3 dashboard.py --selftest   # renderizacao do painel
 ```
 
 Quando o validador passa, `deliver.sh` marca a tag: o **PSP** é esse instantâneo imutável,
@@ -55,6 +62,7 @@ não a pasta viva, que continua mudando depois da entrega (ADR-007). A Implement
 | `.claude/agents/` | 4 subagentes — revisão em contexto frio |
 | `validate.py` | os 11 gates. Exit code, zero chamada de LLM |
 | `new-project.sh` · `promote.sh` · `deliver.sh` | criar, promover trilha, marcar o PSP |
+| `dashboard.py` | painel local de progresso, somente leitura (ADR-009) |
 | `docs/` | visão longa e o entendimento fechado que define este escopo |
 
 Leia [`docs/alignment.md`](docs/alignment.md) antes de [`docs/vision.md`](docs/vision.md):

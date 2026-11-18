@@ -136,6 +136,8 @@ gate para ele passar — o gate existe porque aquela falha já custou retrabalho
 
 ## O que este repo deliberadamente não tem
 
-Sem banco, sem servidor, sem interface web, sem orquestração multiagente, sem CI. Arquivo
+Sem banco, sem orquestração multiagente, sem CI. A única interface é o painel local
+`dashboard.py`, **somente leitura** (ADR-009): ele mostra, você faz, o Autor decide. Nunca
+acrescente escrita a ele — um botão de aprovar desfaria a BR-001. Arquivo
 e git bastam para um usuário. Se você sentir falta de algum deles, leia a §9 de
 `docs/alignment.md` antes de propor: a ausência é decisão tomada, não lacuna.

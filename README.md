@@ -37,12 +37,19 @@ Painel de progresso, somente leitura:
 python3 dashboard.py              # http://localhost:8099
 ```
 
+| Rota | Para quê |
+|---|---|
+| `/` | progresso, cobertura e pendências |
+| `/doc?p=&f=` | um arquivo, com sumário, ligações e vizinhos |
+| `/read?p=&g=` | todos os artefatos de um grupo em sequência, para crítica |
+
 Autoteste do repositório:
 
 ```bash
 python3 test_validate.py    # os 11 gates, 26 casos
 python3 test_scripts.py     # criacao e promocao de projeto, 7 casos
-python3 dashboard.py --selftest   # renderizacao do painel
+python3 dashboard.py --selftest   # painel: rotas, ligacoes, travessia de path
+python3 render.py                 # markdown -> html
 ```
 
 Quando o validador passa, `deliver.sh` marca a tag: o **PSP** é esse instantâneo imutável,
@@ -62,7 +69,7 @@ não a pasta viva, que continua mudando depois da entrega (ADR-007). A Implement
 | `.claude/agents/` | 4 subagentes — revisão em contexto frio |
 | `validate.py` | os 11 gates. Exit code, zero chamada de LLM |
 | `new-project.sh` · `promote.sh` · `deliver.sh` | criar, promover trilha, marcar o PSP |
-| `dashboard.py` | painel local de progresso, somente leitura (ADR-009) |
+| `dashboard.py` · `render.py` | painel local de leitura, somente leitura (ADR-009) |
 | `docs/` | visão longa e o entendimento fechado que define este escopo |
 
 Leia [`docs/alignment.md`](docs/alignment.md) antes de [`docs/vision.md`](docs/vision.md):

@@ -20,7 +20,8 @@
 | 5 | Skills por etapa | 12 skills; cada etapa gera seu artefato a partir do template | FR-003, FR-004, FR-005 | 4 | escrito |
 | 6 | Subagentes de revisão | 4 papéis em contexto isolado, devolvendo achados | FR-003, FR-008, NFR-001 | 5 | escrito |
 | 7 | **Primeiro projeto real** | Um projeto do autor atravessa as 12 skills e sai com os 10 gates verdes | FR-009, NFR-004 | 5, 6 | **pendente** |
-| 8 | Promoção de trilha | `light` → `full` preservando aprovação | FR-010 | 3 | pendente |
+| 8 | Promoção de trilha | `promote.sh`: `light` → `full` preservando aprovação | FR-010 | 3 | provado |
+| 9 | Marcação do PSP | `deliver.sh`: valida, exige árvore limpa, cria a tag do instantâneo | FR-009 | 2 | provado |
 
 ## Primeira fatia pendente — a 7
 
@@ -35,8 +36,8 @@ perguntam o que importa, que as skills geram artefato útil, nem que o PSP resul
 para implementar. Template genérico parece bom até o primeiro uso real — é o caso concreto
 que revela qual campo sobra e qual falta.
 
-Promover trilha (fatia 8) antes disso seria construir sobre forma não validada: se o uso
-real mudar os templates, a promoção muda junto.
+As fatias 8 e 9 foram entregues depois, porque são código com gate próprio — custam pouco
+e não dependem do uso real. A 7 continua sendo a única que converte `escrito` em `provado`.
 
 ## Incerteza que a fatia 7 resolve
 

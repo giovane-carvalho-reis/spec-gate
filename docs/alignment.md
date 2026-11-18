@@ -109,7 +109,7 @@ artefato aprovado.
 | G10 | Diagrama obrigatório ausente ou do tipo errado |
 | G11 | Requisito funcional sem `verification` declarado |
 
-Detalhe em `methodology/gates.md`. Autoteste em `test_validate.py`, 25 casos.
+Detalhe em `methodology/gates.md`. Autoteste em `test_validate.py` (26 casos) e `test_scripts.py` (7 casos).
 
 ## 6. Diagramas
 
@@ -196,9 +196,10 @@ insuportável. Nenhuma das duas é hoje.
 2. `spec-traceability` sobrepõe parte do `validate.py`. Escopado para cobertura semântica;
    se na prática só repetir o script, é o primeiro dos quatro subagentes a cortar.
 3. Propagação de `stale` é manual hoje. Automatizar só depois de doer.
-4. Nada força marcar a tag do PSP (ADR-007). Tag esquecida = entrega não identificável, e
-   o validador não detecta.
-5. FR-010 (promoção de trilha) continua sem implementação — fatia 8.
+4. ~~Nada força marcar a tag do PSP~~ — `deliver.sh` é o caminho: recusa gate vermelho e
+   árvore suja. Nada impede marcar uma tag à mão fora dele, mas aí é escolha, não descuido.
+5. ~~FR-010 sem implementação~~ — `promote.sh`, coberto por `TC-006`.
+6. Licença MIT escolhida por ser o default convencional. Trocar se a intenção for outra.
 
 ## 12. Nome
 

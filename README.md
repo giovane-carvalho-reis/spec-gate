@@ -15,6 +15,7 @@ frontmatter, versionados por git. A interface é um agente de IA conduzido por
 
 ```bash
 ./new-project.sh minha-ideia "Minha Ideia" light   # cria projects/minha-ideia/
+./promote.sh minha-ideia                           # light -> full, se o projeto crescer
 ```
 
 Depois, no Claude Code, uma skill por etapa:
@@ -26,12 +27,20 @@ Depois, no Claude Code, uma skill por etapa:
 ```
 
 ```bash
-python3 validate.py projects/minha-ideia          # exit != 0 enquanto houver bloqueio
-python3 test_validate.py                          # autoteste dos 10 gates
+python3 validate.py projects/minha-ideia   # exit != 0 enquanto houver bloqueio
+./deliver.sh minha-ideia                   # valida e marca a tag do PSP
 ```
 
-Quando o validador passa, a pasta do projeto **é** o PSP. Entregue a pasta (ou
-`git archive`) ao projeto de implementação.
+Autoteste do repositório:
+
+```bash
+python3 test_validate.py    # os 11 gates, 26 casos
+python3 test_scripts.py     # criacao e promocao de projeto, 7 casos
+```
+
+Quando o validador passa, `deliver.sh` marca a tag: o **PSP** é esse instantâneo imutável,
+não a pasta viva, que continua mudando depois da entrega (ADR-007). A Implementação recebe
+`git archive psp/<slug>/v1`.
 
 ## Estrutura
 
@@ -44,6 +53,8 @@ Quando o validador passa, a pasta do projeto **é** o PSP. Entregue a pasta (ou
 | `projects/` | os projetos especificados, um por pasta |
 | `.claude/skills/` | 12 skills, uma por etapa — geração |
 | `.claude/agents/` | 4 subagentes — revisão em contexto frio |
+| `validate.py` | os 11 gates. Exit code, zero chamada de LLM |
+| `new-project.sh` · `promote.sh` · `deliver.sh` | criar, promover trilha, marcar o PSP |
 | `docs/` | visão longa e o entendimento fechado que define este escopo |
 
 Leia [`docs/alignment.md`](docs/alignment.md) antes de [`docs/vision.md`](docs/vision.md):

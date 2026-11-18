@@ -125,6 +125,12 @@ nenhum diagrama expressa.
 python3 validate.py projects/<slug>
 ```
 
+Mexeu no validador, nos schemas ou nos scripts? Rode os dois autotestes também:
+
+```bash
+python3 test_validate.py && python3 test_scripts.py
+```
+
 Exit 0 ou não terminou. Não relate "pronto" com o validador vermelho, e não desligue um
 gate para ele passar — o gate existe porque aquela falha já custou retrabalho.
 

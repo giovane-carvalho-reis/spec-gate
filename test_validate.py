@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Autoteste do validador. Uso: python3 test_validate.py"""
 import tempfile
+import time
 from pathlib import Path
 
 from validate import validate
@@ -180,6 +181,26 @@ def main():
                              "---\nid: PR-001\ntype: process\ntitle: Fluxo\n"
                              "status: approved\n---\nso prosa\n"})
         check("TC-002 G10 PR sem flowchart", validate(d), {"G10"})
+    # TC-008 — NFR-002: 100 artefatos em menos de 2s.
+    with tempfile.TemporaryDirectory() as tmp:
+        d = build(tmp)
+        for i in range(2, 51):
+            (d / f"requirements/FR-{i:03d}.md").write_text(
+                FR.replace("FR-001", f"FR-{i:03d}"))
+            (d / f"rules/BR-{i:03d}.md").write_text(
+                BR.replace("BR-001", f"BR-{i:03d}"))
+            # cada regra referenciada, para isolar o tempo de G2/G3
+            f = d / f"requirements/FR-{i:03d}.md"
+            f.write_text(f.read_text().replace("satisfies: [BR-001]",
+                                               f"satisfies: [BR-{i:03d}]"))
+        n = len(list(d.rglob("*.md")))
+        t0 = time.perf_counter()
+        fails = validate(d)
+        dt = time.perf_counter() - t0
+        assert not fails, f"projeto sintetico deveria passar: {fails[:3]}"
+        assert dt < 2.0, f"{n} artefatos em {dt:.2f}s — NFR-002 exige < 2s"
+        print(f"  ok  TC-008 NFR-002: {n} artefatos em {dt:.2f}s (< 2s)")
+
     print("\ntodos os gates verificados")
 
 

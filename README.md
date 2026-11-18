@@ -28,8 +28,14 @@ Depois, no Claude Code, uma skill por etapa:
 
 ```bash
 python3 validate.py projects/minha-ideia   # exit != 0 enquanto houver bloqueio
-./deliver.sh minha-ideia                   # valida e marca a tag do PSP
+python3 package.py minha-ideia             # empacota o PSP em zip
+./deliver.sh minha-ideia                   # marca a tag do instantaneo
 ```
+
+`package.py` recusa com gate vermelho — o PSP é o pacote que passou os 11 gates.
+`--rascunho` empacota assim mesmo, marcado no nome e no manifesto, para inspeção.
+O zip traz um `MANIFEST.txt` com trilha, commit, contagem de artefatos, estado das
+etapas e a ordem de leitura para quem vai implementar.
 
 Painel de progresso, somente leitura:
 
@@ -50,6 +56,7 @@ python3 test_validate.py    # os 11 gates, 26 casos
 python3 test_scripts.py     # criacao e promocao de projeto, 7 casos
 python3 dashboard.py --selftest   # painel: rotas, ligacoes, travessia de path
 python3 render.py                 # markdown -> html
+python3 package.py --selftest     # manifesto e zip
 ```
 
 Quando o validador passa, `deliver.sh` marca a tag: o **PSP** é esse instantâneo imutável,
@@ -69,6 +76,7 @@ não a pasta viva, que continua mudando depois da entrega (ADR-007). A Implement
 | `.claude/agents/` | 4 subagentes — revisão em contexto frio |
 | `validate.py` | os 11 gates. Exit code, zero chamada de LLM |
 | `new-project.sh` · `promote.sh` · `deliver.sh` | criar, promover trilha, marcar o PSP |
+| `package.py` | empacota o PSP em zip, com manifesto |
 | `dashboard.py` · `render.py` | painel local de leitura, somente leitura (ADR-009) |
 | `docs/` | visão longa e o entendimento fechado que define este escopo |
 

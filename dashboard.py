@@ -5,9 +5,11 @@ Uso:  python3 dashboard.py [porta]        # padrao 8099
       python3 dashboard.py --selftest     # renderiza sem abrir porta
 
 Rotas:
-  /                      progresso, cobertura e pendencias
+  /                      todos os projetos documentados
+  /p?p=<slug>            um projeto: progresso, pastas, cobertura, pendencias
   /doc?p=&f=             um arquivo, com sumario, ligacoes e vizinhos
   /read?p=&g=            todos os artefatos de um grupo em sequencia (critica)
+  /zip?p=<slug>          baixa o PSP em zip — so com os 11 gates verdes
 
 Le as pastas a cada request — sem build, sem cache, sem estado. Nunca
 escreve: o arquivo segue sendo a fonte de verdade (ADR-001) e o processo
@@ -23,6 +25,7 @@ from pathlib import Path
 
 import yaml
 
+import package
 import render
 import validate as V
 
@@ -132,6 +135,22 @@ font-size:13.5px}
 border-top:1px solid var(--line);padding-top:16px;font-size:13.5px}
 .sep{margin:52px 0 0;border-top:2px solid var(--line);padding-top:30px}
 footer{color:var(--mut);font-size:12.5px;margin-top:40px}
+.plist{display:grid;gap:14px;margin-top:6px}
+.pcard{display:block;border:1px solid var(--line);border-radius:10px;padding:18px 20px;
+background:var(--card);color:var(--fg)}
+.pcard:hover{border-color:var(--mut);text-decoration:none}
+.pcard .t{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.pcard h3{margin:0;font-size:17px}
+.pcard .meta2{font-size:12.5px;color:var(--mut);margin:6px 0 0}
+tree,.tree{display:block;font:12.8px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;
+background:var(--soft);border-radius:8px;padding:14px 16px;overflow-x:auto}
+.tree a{color:var(--fg)}.tree a:hover{color:var(--link)}
+.tree .d{color:var(--mut)}
+.btn{display:inline-block;border:1px solid var(--ok);color:var(--ok);border-radius:7px;
+padding:8px 15px;font-size:13.5px;font-weight:600;margin-top:4px}
+.btn:hover{background:var(--ok);color:var(--bg);text-decoration:none}
+.btn.off{border-color:var(--line);color:var(--mut);cursor:not-allowed}
+.btn.off:hover{background:none;color:var(--mut)}
 @media(max-width:820px){.wrap{grid-template-columns:1fr}
 nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
 main{padding:24px 18px 60px}}
@@ -198,7 +217,7 @@ def sidebar(p, here=""):
     done = sum(1 for _, v in p["stages"] if v == "approved")
     rev = sum(1 for _, v in p["stages"] if v == "review")
     tot = len(p["stages"]) or 1
-    s = [f'<a class="brand" href="/">{esc(p["name"])}</a>'
+    s = [f'<a class="brand" href="/p?p={p["slug"]}">{esc(p["name"])}</a>'
          f'<span class="tag">trilha {esc(p["track"])} · {p["n_fails"]} pendência(s)</span>'
          f'<div class="mini"><i class="a" style="width:{done / tot:.1%}"></i>'
          f'<i class="r" style="width:{rev / tot:.1%}"></i></div>'
@@ -360,6 +379,34 @@ def read_group(slug, g):
     return shell(f"{label} · {slug}", p, body, mermaid=True)
 
 
+def tree(p):
+    """Estrutura da pasta do projeto — o que vai no PSP."""
+    base = p["dir"]
+    files = sorted(f for f in base.rglob("*") if f.is_file())
+    by_dir = defaultdict(list)
+    for f in files:
+        by_dir[f.parent.relative_to(base).as_posix()].append(f)
+    out = [f'<span class="d">projects/{esc(p["slug"])}/</span>']
+    for d in sorted(by_dir, key=lambda x: (x != ".", x)):
+        items = sorted(by_dir[d])
+        if d != ".":
+            out.append(f'  <span class="d">{esc(d)}/</span>')
+        for f in items:
+            rel = f.relative_to(base).as_posix()
+            pad = "    " if d != "." else "  "
+            size = f.stat().st_size
+            link = (f'<a href="/doc?p={p["slug"]}&f={up.quote(rel)}">{esc(f.name)}</a>'
+                    if f.suffix == ".md" else esc(f.name))
+            out.append(f'{pad}{link}  <span class="d">{size:,} B</span>'
+                       .replace(",", "."))
+    n = len(files)
+    total = sum(f.stat().st_size for f in files)
+    return (f'<h2 class="sec">Pasta do projeto — o que vai no PSP</h2>'
+            f'<div class="tree">{"<br>".join(out)}</div>'
+            f'<p class="sub" style="margin-top:10px">{n} arquivos, '
+            f'{total // 1024} KB.</p>')
+
+
 def coverage(p):
     sat = defaultdict(list)
     for aid, a in p["arts"].items():
@@ -413,6 +460,57 @@ def pendencies(p):
             f"<tbody>{''.join(rows)}</tbody></table>")
 
 
+def download_block(p):
+    if p["n_fails"]:
+        return ('<h2 class="sec">Entrega</h2>'
+                f'<span class="btn off">Baixar PSP (.zip)</span>'
+                f'<p class="sub" style="margin-top:8px">Bloqueado: '
+                f'{p["n_fails"]} pendência(s). O PSP é o pacote que passou os 11 gates — '
+                f'baixar com gate vermelho entregaria especificação incoerente '
+                f'(FR-009).<br>Para inspecionar assim mesmo: '
+                f'<code>python3 package.py {esc(p["slug"])} --rascunho</code></p>')
+    return ('<h2 class="sec">Entrega</h2>'
+            f'<a class="btn" href="/zip?p={p["slug"]}">Baixar PSP (.zip)</a>'
+            '<p class="sub" style="margin-top:8px">Inclui <code>MANIFEST.txt</code> com '
+            'trilha, commit, contagem de artefatos e a ordem de leitura. '
+            f'Pela linha de comando: <code>python3 package.py {esc(p["slug"])}</code>. '
+            f'Para marcar a tag: <code>./deliver.sh {esc(p["slug"])}</code> (ADR-007).</p>')
+
+
+def project_list():
+    slugs = [d.name for d in sorted(PROJECTS.iterdir())
+             if (d / "project.yaml").is_file()] if PROJECTS.is_dir() else []
+    cards = []
+    for sl in slugs:
+        p = load(sl)
+        done = sum(1 for _, v in p["stages"] if v == "approved")
+        rev = sum(1 for _, v in p["stages"] if v == "review")
+        tot = len(p["stages"]) or 1
+        state = ('<span class="green">pronto para entrega</span>' if not p["n_fails"]
+                 else f'<span class="gate">{p["n_fails"]} pendência(s)</span>')
+        cards.append(f"""<a class="pcard" href="/p?p={esc(sl)}">
+<div class="t"><h3>{esc(p["name"])}</h3>
+<span class="pill">trilha {esc(p["track"])}</span></div>
+<div class="mini"><i class="a" style="width:{done / tot:.1%}"></i>
+<i class="r" style="width:{rev / tot:.1%}"></i></div>
+<p class="meta2">{done}/{tot} etapas aprovadas · {len(p["arts"])} artefatos · {state}</p>
+</a>""")
+    body = "".join(cards) or ('<p class="empty">Nenhum projeto ainda. '
+                              '<code>./new-project.sh &lt;slug&gt; "&lt;Nome&gt;" '
+                              'light</code></p>')
+    return (f'<!doctype html><html lang="pt-BR"><meta charset="utf-8">'
+            f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+            f"<title>spec-gate</title><style>{CSS}</style>"
+            f'<div class="wrap" style="grid-template-columns:1fr"><main>'
+            f"<h1>Projetos documentados</h1>"
+            f'<p class="sub">Cada projeto é uma especificação isolada. Quando os 11 '
+            f"gates passam, a pasta vira o PSP e pode ser baixada para a "
+            f"Implementação.</p>"
+            f'<div class="plist">{body}</div>'
+            f"<footer>Lê <code>projects/</code> a cada request. Somente leitura.</footer>"
+            f"</main></div></html>")
+
+
 def overview(slug):
     p = load(slug)
     counts = Counter(a["meta"].get("status", "?") for a in p["arts"].values())
@@ -441,6 +539,8 @@ Leitura corrida: {reading}</p>
 <h2 class="sec">Etapas</h2>
 <table><thead><tr><th>etapa</th><th>estado</th><th>conteúdo</th></tr></thead>
 <tbody>{stage_rows}</tbody></table>
+{tree(p)}
+{download_block(p)}
 {coverage(p)}
 {pendencies(p)}
 <footer>Lê <code>projects/{esc(p["slug"])}/</code> a cada request. Sem estado, sem cache.
@@ -461,11 +561,28 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         u = up.urlparse(self.path)
         q = up.parse_qs(u.query)
+        if u.path in ("/", "/index.html"):
+            self._html(project_list())
+            return
         slug = q.get("p", [None])[0] or first_slug()
         out = None
-        if slug:
-            if u.path in ("/", "/index.html"):
+        if slug and (PROJECTS / slug / "project.yaml").is_file():
+            if u.path == "/p":
                 out = overview(slug)
+            elif u.path == "/zip":
+                pr = load(slug)
+                if pr["n_fails"]:
+                    self.send_error(409, "PSP bloqueado: gates vermelhos")
+                    return
+                data = package.build(package.inspect(slug))
+                self.send_response(200)
+                self.send_header("Content-Type", "application/zip")
+                self.send_header("Content-Disposition",
+                                 f'attachment; filename="{slug}-psp.zip"')
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+                return
             elif u.path == "/doc":
                 out = document(slug, q.get("f", [""])[0])
             elif u.path == "/read":
@@ -473,7 +590,10 @@ class Handler(BaseHTTPRequestHandler):
         if out is None:
             self.send_error(404)
             return
-        data = out.encode()
+        self._html(out)
+
+    def _html(self, text):
+        data = text.encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
@@ -488,10 +608,23 @@ def selftest():
     render.demo()
     slug = first_slug()
     assert slug, "nenhum projeto"
+
+    pl = project_list()
+    assert "Projetos documentados" in pl and f'href="/p?p={slug}"' in pl
+    print("  ok  lista de projetos")
+
     ov = overview(slug)
-    for w in ("<nav>", "Cobertura", "Pendências", "FR-001", "/read?p="):
-        assert w in ov, f"overview sem {w!r}"
-    print(f"  ok  overview: {len(ov)} bytes, com navegacao lateral")
+    for w in ("<nav>", "Cobertura", "Pendências", "FR-001", "/read?p=",
+              "Pasta do projeto", "Baixar PSP"):
+        assert w in ov, f"projeto sem {w!r}"
+    print(f"  ok  pagina do projeto: {len(ov)} bytes, com pastas e entrega")
+
+    pr = load(slug)
+    assert pr["n_fails"], "esperado bloqueado neste momento"
+    assert 'class="btn off"' in ov, "download deveria estar bloqueado com gate vermelho"
+    print("  ok  download bloqueado enquanto ha pendencia")
+
+    package.selftest()
 
     d = document(slug, "requirements/FR-001.md")
     for w in ("citado por", "satisfaz", 'class="nxt"', "Critérios de aceitação"):
